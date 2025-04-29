@@ -14,7 +14,7 @@
 	aliases {
 		serial0 = &uart1;
 		spi0 = &qspi;
-		mmc0 = &sdhci1;
+		mmc0 = &sdhci0;
 	};
 
 	memory@0 {
@@ -33,7 +33,12 @@
 	status = "okay";
 };
 
-&sdhci1 {
+&sdhci0 {
 	bootph-all;
 	status = "okay";
+};
+
+&gem0 {
+	status = "okay";
+	phy-mode = "rgmii-id";
 };
