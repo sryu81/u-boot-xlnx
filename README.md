@@ -72,13 +72,13 @@ autoload=n
 memaddr=30000000
 elffile=psc.elf
 bitfile=psc.bit
-bootcmd=setenv autostart n\\
-  dhcp\\
-  tftpboot 0x\${memaddr} \${bitfile}\\
-  fpga loadb 0 0x\${memaddr} 0x\${filesize}\\
-  tftpboot 0x\${memaddr} \${elffile}\\
-  setenv autostart y\\
-  bootelf 0x\${memaddr}
+bootcmd=setenv autostart n\
+  dhcp\
+  tftpboot 0x${memaddr} ${bitfile}\
+  fpga loadb 0 0x${memaddr} 0x${filesize}\
+  tftpboot 0x${memaddr} ${elffile}\
+  setenv autostart y\
+  bootelf 0x${memaddr}
 ```
 
 Now create `uboot.env`
