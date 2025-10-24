@@ -21,30 +21,21 @@ Tested on Debian 12 and Ubuntu 24.01 LTS
 sudo apt-get install git libssl-dev uuid-dev libgnutls-dev
 
 # Common build steps
-
-- currently u-boot is in the deviceconf so if you just clone it then you will get messy by other directories...
-- To clone the u-boot only you should follow the instruction below:
-
-git clone --no-checkout ssh://git@git-local.als.lbl.gov:8022/alsu/configuration/deviceconf.git
-cd deviceconf
-git sparse-checkout init --cone
-git sparse-checkout set u-boot
-git checkout master
+git clone ssh://git@git-local.als.lbl.gov:8022/alsu/configuration/u-boot.git
 
 - then you will see the u-boot directory only
 
 cd u-boot
 
-. path/to/settings64.sh
+# Assuming your xilinx environment is under /opt/Xilinx/Vitis
 
-make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- \
-  distclean
+source /opt/Xilinx/Vitis/<Version>/settings64.sh
 
-make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- \
-  xilinx_zynq_picozed_psc_defconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- distclean
 
-make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- \
-  all
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- xilinx_zynq_picozed_psc_defconfig
+
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- all
 ```
 
 Result `u-boot.elf`.
