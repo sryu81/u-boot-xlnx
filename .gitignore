@@ -1,0 +1,11 @@
+*.o.cmd
+*.o
+*.tmp
+*.cmd
+*.lex.c 
+*.tab.c 
+*.su
+.config
+.config.*
+.binman_stamp
+System.map
