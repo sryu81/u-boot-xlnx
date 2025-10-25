@@ -45,8 +45,6 @@ sudo dnf install
 # Common build steps
 git clone ssh://git@git-local.als.lbl.gov:8022/alsu/configuration/u-boot.git
 
-- then you will see the u-boot directory only
-
 cd u-boot
 
 # Assuming your xilinx environment is under /opt/Xilinx/Vitis
