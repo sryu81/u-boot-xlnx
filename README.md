@@ -149,6 +149,18 @@ Now create "psc-2ch-hss.scr"
 ./tools/mkimage -A arm -T script -C none -n "PSC-2CH-HSS Boot Script" -d psc-2ch-hss.txt psc-2ch-hss.scr
 ```
 
+# TFTP setup
+
+place your psc boot script, in this case psc-2ch-hss.scr, to the tftp root directory:
+
+```
+/srv/tftp/psc-2ch-hss.scr
+/srv/tftp/psc-4ch-mss.scr
+/srv/tftp/psc-4ch-msf.scr
+/srv/tftp/psc-4ch-hss.scr
+/srv/tftp/psc-4ch-hsf.scr
+```
+
 # DHCP configuration file (/etc/dhcp/dhcpd.conf)
 
 DHCP should be configured correctly.
@@ -180,14 +192,3 @@ subnet 10.16.18.0 netmask 255.255.255.0 {
 
 ```
 
-# TFTP setup
-
-place your psc boot script, in this case psc-2ch-hss.scr, to the tftp root directory:
-
-```
-/srv/tftp/psc-2ch-hss.scr
-/srv/tftp/psc-4ch-mss.scr
-/srv/tftp/psc-4ch-msf.scr
-/srv/tftp/psc-4ch-hss.scr
-/srv/tftp/psc-4ch-hsf.scr
-```

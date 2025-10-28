@@ -1,0 +1,11 @@
+ethaddr=fc:0f:e7:14:04:10
+serverip=10.16.18.12
+bootdelay=5
+autostart=n
+autoload=n
+memaddr=30000000
+ubootfile=BOOT.bin
+echo "Writing Flash Rom"
+bootcmd=dhcp\
+   tftpboot 0x${memaddr} ${ubootfile}
+   sf 
