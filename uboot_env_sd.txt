@@ -6,10 +6,10 @@ binaddr=0x30000000
 envaddr=0x30100000
 ubootfile=qspiboot.bin
 ubootenv=qspiboot.env
-bootcmd= echo "Writing Flash Rom" &&
-   fatload mmc 0:1 ${binaddr} ${ubootfile} && 
-   fatloat mmc 0:1 ${envaddr} ${ubootenv} &&
-   sf probe 0 0 0 && 
-   sf write ${binaddr} 0x0 0x100000 &&
-   sf write ${envaddr} 0x100000 0x20000 &&
+bootcmd= echo "Writing Flash Rom" && \
+   fatload mmc 0:1 ${binaddr} ${ubootfile} && \
+   fatloat mmc 0:1 ${envaddr} ${ubootenv} && \
+   sf probe 0 0 0 && \
+   sf write ${binaddr} 0x0 0x100000 && \
+   sf write ${envaddr} 0x100000 0x20000 && \
    echo "QSPI programming completed.. "

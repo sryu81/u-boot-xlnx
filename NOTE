@@ -1,0 +1,26 @@
+Troubleshootings
+1. ERROR: xlsclients is not available on the system, please make sure xlsclients is available on the system
+
+sudo dnf config-manager --set-enabled powertools
+sudo dnf install xorg-x11-apps
+
+
+qspiprog.txt
+./tools/mkenvimage -r -s 0x20000 -o qspiboot.env qspienv.txt
+
+
+qspi programming SD card should contain:
+
+qspiboot.bin
+qspiboot.env
+BOOT.bin
+uboot.env
+
+these 4 files.
+
+
+bootgen -arch zynq -image uboot_sd.bif -w -o BOOT.bin
+bootgen -arch zynq -image uboot_sf.bif -w -o qspiboot.bin
+
+ ./tools/mkenvimage -r -s 0x20000 -o uboot.env uboot_env_sd.txt 
+ ./tools/mkenvimage -r -s 0x20000 -o qspiboot.env uboot_env_sf.txt

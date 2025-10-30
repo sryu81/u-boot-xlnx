@@ -1,5 +1,5 @@
 u_boot:
 {
         [bootloader]fsbl_sd.elf
-        u-boot_sf.elf
+        u-boot.elf
 }
