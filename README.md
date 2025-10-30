@@ -94,7 +94,7 @@ autoload=n
 bootcmd=setenv memaddr 0x38000000;dhcp;tftpboot ${memaddr} ${bootfile};source ${memaddr}
 ```
 
-Now create `uboot.env`
+Now create `uboot.env`  : before creating this check `.config` first!!! 
 
 ```sh
 ./tools/mkenvimage -r -s 0x20000 -o uboot.env env.txt
