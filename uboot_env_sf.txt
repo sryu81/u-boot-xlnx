@@ -2,7 +2,7 @@ ethaddr=fc:0f:e7:14:04:10
 bootdelay=5
 autostart=n
 autoload=n
-setenv memaddr 0x38000000
+setenv memaddr 0x30000000
 bootcmd= echo "Start Network boot..." && 
    dhcp &&
    tftpboot ${memaddr} ${bootfile} &&

@@ -9,3 +9,4 @@
 .config.*
 .binman_stamp
 System.map
+*.Xil
