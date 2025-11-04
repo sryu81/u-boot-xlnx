@@ -8,8 +8,10 @@ ubootfile=qspiboot.bin
 ubootenv=qspiboot.env
 bootcmd= echo "Writing Flash Rom" && \
    fatload mmc 0:1 ${binaddr} ${ubootfile} && \
-   fatloat mmc 0:1 ${envaddr} ${ubootenv} && \
+   fatload mmc 0:1 ${envaddr} ${ubootenv} && \
    sf probe 0 0 0 && \
+   sf erase 0x0 0x140000 \
    sf write ${binaddr} 0x0 0x100000 && \
    sf write ${envaddr} 0x100000 0x20000 && \
+   sf write ${envaddr} 0x120000 0x20000 && \
    echo "QSPI programming completed.. "

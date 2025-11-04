@@ -4,16 +4,57 @@ Troubleshootings
 sudo dnf config-manager --set-enabled powertools
 sudo dnf install xorg-x11-apps
 
+2. Loading Environment from SPIFlash... zynq_qspi spi@e000d000: Invalid chip select 0:0 (err=-19)
+*** Warning - spi_flash_probe_bus_cs() failed, using default environment
 
-generating fsbl 
+Refer to : https://adaptivesupport.amd.com/s/question/0D54U000091Fh8jSAC/qspi-flash-initialization-problem-in-uboot?language=en_US
+
+Solution:
+
+Modify in arch/arm/dts/zynq-7000.dtsi
+
+qspi: spi@e000d000 {
+   compatible = "xlnx,zynq-qspi-1.0";
+   reg = <0xe000d000 0x1000>;
+   interrupt-parent = <&intc>;
+   interrupts = <0 19 4>;
+   clocks = <&clkc 10>, <&clkc 43>;
+   clock-names = "ref_clk", "pclk";
+///the code that I added begin
+   status = "okay";
+   #address-cells = <1>;
+   #size-cells = <0>;
+   u-boot,dm-pre-reloc;
+         num-cs = <0x1>;
+   spi-rx-bus-width = <0x4>;
+   spi-tx-bus-width = <0x4>;
+ 
+   flash@0 {
+              compatible = "jedec,spi-nor";
+              reg = <0x0>;
+              spi-tx-bus-width = <4>;
+              spi-rx-bus-width = <4>;
+              spi-max-frequency = <50000000>;
+              #address-cells = <1>;
+              #size-cells = <1>;
+              };
+///the code that I added end
+  };
+
+Add this environment settings for xilinx_zynq_picozed_psc_defconfig
+
+
+
+# generating fsbl 
 xsct -norlwrap generate_fsbl.tcl picozed xsa/System.xsa 
 
 
+# generating BOOT.bin and qspiboot.bin
 bootgen -arch zynq -image uboot_sd.bif -w -o BOOT.bin
 bootgen -arch zynq -image uboot_sf.bif -w -o qspiboot.bin
 
- ./tools/mkenvimage -r -s 0x20000 -o uboot.env uboot_env_sd.txt 
- ./tools/mkenvimage -r -s 0x20000 -o qspiboot.env uboot_env_sf.txt
+./tools/mkenvimage -r -s 0x20000 -o uboot.env uboot_env_sd.txt 
+./tools/mkenvimage -r -s 0x20000 -o qspiboot.env uboot_env_sf.txt
 
 
  qspi programming SD card should contain:

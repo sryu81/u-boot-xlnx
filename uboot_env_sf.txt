@@ -3,7 +3,7 @@ bootdelay=5
 autostart=n
 autoload=n
 setenv memaddr 0x30000000
-bootcmd= echo "Start Network boot..." && 
-   dhcp &&
-   tftpboot ${memaddr} ${bootfile} &&
-   source ${memaddr}
+bootcmd= echo "Start Network boot..." && \
+   dhcp && \
+   tftpboot ${memaddr} ${bootfile} && \
+   go ${memaddr}
