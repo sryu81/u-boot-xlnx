@@ -1,17 +1,37 @@
-ethaddr=00:01:02:03:04:05
 bootdelay=5
 autostart=n
 autoload=n
-binaddr=0x30000000
-envaddr=0x30100000
 ubootfile=qspiboot.bin
 ubootenv=qspiboot.env
-bootcmd= echo "Writing Flash Rom" && \
-   fatload mmc 0:1 ${binaddr} ${ubootfile} && \
-   fatload mmc 0:1 ${envaddr} ${ubootenv} && \
-   sf probe 0 0 0 && \
-   sf erase 0x0 0x140000 \
-   sf write ${binaddr} 0x0 0x100000 && \
-   sf write ${envaddr} 0x100000 0x20000 && \
-   sf write ${envaddr} 0x120000 0x20000 && \
+bitfile=psc-4ch-hss.bit
+elffile=psc-4ch-hss.elf
+
+memaddr=0x30000000
+envaddr=0x30100000
+bitaddr=0x30200000
+elfaddr=0x30800000
+ubootbinsize=0x100000
+ubootenvsize=0x20000
+pscbitsize=0x600000
+pscelfsize=0x200000
+
+bootcmd= echo "Writing Flash Rom"; \
+   fatload mmc 0:1 ${memaddr} ${ubootfile}; \
+   fatload mmc 0:1 ${envaddr} ${ubootenv}; \
+   fatload mmc 0:1 ${bitaddr} ${bitfile}; \
+   fatload mmc 0:1 ${elfaddr} ${elffile}; \
+   sf probe; \
+   echo "Move unit parameters to Free space"; \
+   sf read  0x38000000 0x0 0x40000; \ 
+   sf erase 0x0 0x1000000; \
+   sf write 0x38000000 0xB00000 0x40000; \
+   echo "writing u-boot"; \
+   sf write ${memaddr} 0x0 ${ubootbinsize}; \
+   echo "write env"; \
+   sf write ${envaddr} 0x100000 ${ubootenvsize}; \
+   sf write ${envaddr} 0x120000 ${ubootenvsize}; \
+   echo "write FPGA bitstream"; \
+   sf write ${envaddr} 0x200000 ${pscbitsize}; \
+   echo "write ELF executable";
+   sf write ${envaddr} 0x800000 ${pscelfsize}; \
    echo "QSPI programming completed.. "
