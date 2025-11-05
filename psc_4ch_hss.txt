@@ -1,0 +1,40 @@
+#memaddr=0x30000000
+#bitsize=0x600000
+#elfsize=0x200000
+
+setenv bitname psc/psc-4ch-hss.bit
+setenv elfname psc/psc-4ch-hss.elf
+
+setenv bitaddr 0x31000000
+setenv elfaddr 0x32000000
+
+setenv autostart n
+setenv autoload n
+setenv updateflash n
+
+echo "--- Loading firmware from Network ---"
+dhcp
+echo "Loading bitstream from TFTP..."
+tftpboot ${bitaddr} ${bitname}
+echo "Loading ELF from TFTP...";
+tftpboot ${elfaddr} ${elfname};
+
+if test "${updateflash}" = "y"; then
+    echo "Updating the firmware in your flash memory is enabled. Executing commands..."
+    sf probe 0 0 0;
+    echo "write FPGA bitstream to Flash memory";
+    sf erase 0x200000 ${bitsize};
+    sf write ${bitaddr} 0x200000 ${bitsize};
+    echo "write ELF executable to Flash memory";
+    sf erase 0x800000 ${elfsize};
+    sf write ${elfaddr} 0x800000 ${elfsize};
+    echo "Updating finished"
+else 
+    echo "Updating the firmware is not enabled or set to 'n'. Skipping commands."
+fi
+
+echo "Writing bitstream into FPGA...";
+fpga loadb 0 ${bitaddr} ${filesize};
+
+setenv autostart y
+bootelf ${elfaddr}

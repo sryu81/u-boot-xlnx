@@ -3,21 +3,31 @@
 ALS-U controls has planed to deploy hundreds of power supply controller for AR and SR.
 We employed the u-boot to manage the firmware for the different PSC kinds centrally.
 
+Here's a brief description of the PSC unit's boot process:
+
+1. System reads the u-boot in the Flash memory.
+2. u-boot sends the DHCP request to obtain the local ip address, TFTP server ip address and the boot script name
+3. DHCP sends back these information to the requesters per ethenet address
+4. u-boot executes the boot script that downloads the FPGA bit file and ELF file from the TFTP server
+5. if necessary, u-boot updates the Flash memory with the downloaded bit and elf file
+6. u-boot programs the FPGA and start the PSC application
+
 This approach requires DHCP and TFTP server in the network.
+Each device should have uinque MAC and IP address.
 
-Here's a brief description of how the boot process looks like:
+## Prerequisite
 
-1. u-boot on the SD card sends the dhcp request to obtain the ip address, tftp server ip address and boot script file name.
-2. DHCP sends these information to the requesters per ethenet address.
-3. u-boot executes the boot script that downloads the bitstream file and elf file from the tftp server.
-4. u-boot runs the boot sequence
+To get fully configured system you need to prepare following things :
 
-Each device should have uinque MAC and IP address and asset ID.
+- A well planned list which contains the unit name, Ethernet address, IP address
+- Ubuntu 22 / Debian 12 system (Rocky is not recommended) with Xilinx Environment > 2020.2
+- SD card : this is only used for updating the flash memory at the beginning
+- TFTP and DHCP server in your network
+- A screw driver to open the chassis cover (and switch the jumper SW1)
 
-The SD card of each device contains u-boot bin and env.txt which can be prepared by following procedure.
-Also, the DHCP and TFTP configuration will be followed.
+For thouse who can't access to the AMD site then download this squash file and deploy into your /opt [Vivado squash](https://drive.google.com/file/d/163ZJ_rJzZPckpBfzCukem66jI8zC2MGq/view?usp=drive_link)
 
-# u-boot for PSC SD card image
+## u-boot for PSC SD card image
 
 See upstream u-boot [README](README).
 
@@ -146,7 +156,9 @@ bootelf ${loadaddr}
 
 Now create "psc-2ch-hss.scr"
 ```
-./tools/mkimage -A arm -T script -C none -n "PSC-2CH-HSS Boot Script" -d psc-2ch-hss.txt psc-2ch-hss.scr
+./tools/mkimage -A arm -T script -C none -n "PSC-2CH-HSS Boot Script" -d pscboot_2ch_hss.txt psc-2ch-hss.scr
+./tools/mkimage -A arm -T script -C none -n "PSC-4CH-HSS Boot Script" -d pscboot_4ch_hss.txt psc-4ch-hss.scr
+
 ```
 
 # TFTP setup

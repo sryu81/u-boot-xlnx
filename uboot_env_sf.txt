@@ -1,14 +1,10 @@
 ethaddr=fc:0f:e7:14:04:10
 bootdelay=5
-autostart=y
+autostart=n
 autoload=n
 memaddr=0x30000000
-
 bitsize=0x600000
 elfsize=0x200000
-
-membitaddr=0x30000000
-qspibitaddr=0x200000
 
 net_boot=\
    echo "--- Loading firmware from Network ---";\
@@ -17,14 +13,12 @@ net_boot=\
    source ${memaddr}
 
 qspi_boot=\
-   echo "--- Loading from QSPI Flash ---";\
-   setexpr memelfaddr ${membitaddr} + ${bitsize};\
-   setexpr qspielfaddr ${qspibitaddr} + ${bitsize};\
-   sf probe 0 0 0;\
-   sf read ${membitaddr} ${qspibitaddr} ${bitsize};\
-   fpga loadb 0 ${membitaddr} ${bitsize};\
-   sf read ${memelfaddr} ${qspielfaddr} ${elfsize};\
-   setenv autostart y;\
-   bootelf ${memelfaddr};
+   echo "--- Loading from QSPI Flash ---"; \
+   sf probe 0 0 0; \
+   sf read ${memaddr} 0x200000 ${bitsize}; \
+   fpga loadb 0 ${memaddr} 0x1;\
+   sf read ${memaddr} 0x800000 ${elfsize}; \
+   setenv autostart y; \
+   bootelf ${memaddr};
 
 bootcmd=run net_boot || run qspi_boot || echo "FATAL: All boot sources failed.";
