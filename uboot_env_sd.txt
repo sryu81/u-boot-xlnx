@@ -20,18 +20,23 @@ bootcmd= echo "Writing Flash Rom"; \
    fatload mmc 0:1 ${envaddr} ${ubootenv}; \
    fatload mmc 0:1 ${bitaddr} ${bitfile}; \
    fatload mmc 0:1 ${elfaddr} ${elffile}; \
-   sf probe; \
+   sf probe 0 0 0; \
    echo "Move unit parameters to Free space"; \
-   sf read  0x38000000 0x0 0x40000; \ 
-   sf erase 0x0 0x1000000; \
+   sf read 0x38000000 0x0 0x40000; \
+   sf erase 0xB00000 0x40000; \
    sf write 0x38000000 0xB00000 0x40000; \
    echo "writing u-boot"; \
+   sf erase 0x0 ${ubootbinsize}; \
    sf write ${memaddr} 0x0 ${ubootbinsize}; \
    echo "write env"; \
+   sf erase 0x100000 ${ubootenvsize}; \
    sf write ${envaddr} 0x100000 ${ubootenvsize}; \
+   sf erase 0x120000 ${ubootenvsize}; \
    sf write ${envaddr} 0x120000 ${ubootenvsize}; \
    echo "write FPGA bitstream"; \
+   sf erase 0x200000 ${pscbitsize}; \
    sf write ${envaddr} 0x200000 ${pscbitsize}; \
-   echo "write ELF executable";
+   echo "write ELF executable";\
+   sf erase 0x800000 ${pscelfsize}; \
    sf write ${envaddr} 0x800000 ${pscelfsize}; \
    echo "QSPI programming completed.. "

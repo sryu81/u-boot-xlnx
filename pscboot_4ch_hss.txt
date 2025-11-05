@@ -4,7 +4,7 @@ setenv elfname psc-4ch-hss.elf
 setenv bitsize 0x600000
 setenv elfsize 0x200000
 
-setenv membitaddr 0x30000000
+setenv membitaddr 0x31000000
 setenv qspibitaddr 0x200000
 
 setexpr memelfaddr ${membitaddr} + ${bitsize}
@@ -13,37 +13,13 @@ setexpr qspielfaddr ${qspibitaddr} + ${bitsize}
 setenv autostart n
 setenv autoload n
 
-setenv qspi_boot '
-    echo "--- Loading from QSPI Flash ---";
-    sf probe;
-    sf read ${membitaddr} ${qspibitaddr} ${bitsize};
-    fpga loadb 0 ${membitaddr} ${bitsize};
-    sf read ${memelfaddr} ${qspielfaddr} ${elfsize};
-    bootelf ${memelfaddr};
-'
-
-setenv net_boot '
-  echo "--- Loading firmware from Network ---";
-  if dhcp; then
-    echo "Loading bitstream from TFTP...";
-    tftpboot ${membitaddr} psc/${bitname};
-    
-    # Check if tftpboot succeeded before continuing
-    if test $? -eq 0; then
-      echo "Loading bitstream into FPGA...";
-      fpga loadb 0 ${membitaddr} ${filesize}; 
-      
-      echo "Loading ELF from TFTP...";
-      tftpboot ${memelfaddr} psc/${elfname};
-      
-      if test $? -eq 0; then
-        echo "Booting ELF...";
-        bootelf ${memelfaddr};
-      fi;
-    fi;
-  fi;
-  false;
-'
-setenv bootcmd 'run net_boot || run qspi_boot ||  echo "FATAL: All boot sources failed."'
-
-run bootcmd
+echo "--- Loading firmware from Network ---"
+dhcp
+echo "Loading bitstream from TFTP..."
+tftpboot ${membitaddr} psc/${bitname}
+echo "Loading bitstream into FPGA...";
+fpga loadb 0 ${membitaddr} ${filesize};
+echo "Loading ELF from TFTP...";
+tftpboot ${membitaddr} psc/${elfname};
+setenv autostart y
+bootelf ${membitaddr}

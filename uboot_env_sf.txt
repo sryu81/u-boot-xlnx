@@ -20,10 +20,11 @@ qspi_boot=\
    echo "--- Loading from QSPI Flash ---";\
    setexpr memelfaddr ${membitaddr} + ${bitsize};\
    setexpr qspielfaddr ${qspibitaddr} + ${bitsize};\
-   sf probe;\
+   sf probe 0 0 0;\
    sf read ${membitaddr} ${qspibitaddr} ${bitsize};\
    fpga loadb 0 ${membitaddr} ${bitsize};\
    sf read ${memelfaddr} ${qspielfaddr} ${elfsize};\
+   setenv autostart y;\
    bootelf ${memelfaddr};
 
 bootcmd=run net_boot || run qspi_boot || echo "FATAL: All boot sources failed.";
