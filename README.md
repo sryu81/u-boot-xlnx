@@ -33,7 +33,7 @@ For thouse who can't access to the AMD site then download this squash file and d
 ## Preparation
 We have 4 things to follow up before deployment
 
----
+
 ### 1. u-boot images for SD card
 
 Files to prepare:
@@ -50,13 +50,14 @@ Files to prepare:
 
 ---
 ### 3. boot scripts for TFTP server
-We need to generate 5 psc boot scripts:
+We need 5 psc boot scripts:
 - psc-2ch-hss.scr
 - psc-4ch-mss.scr
 - psc-4ch-msf.scr
 - psc-4ch-hss.scr
 - psc-4ch-hsf.scr
 
+Refer to [Generate boot scripts](#bootscript) section.
 These files should be in the tftp root directory. (e.g. /srv/tftp/ )
 
 ---
@@ -101,7 +102,22 @@ subnet 10.16.18.0 netmask 255.255.255.0 {
 }
 
 ```
-Check firewall setting and routers to receive/send dhcp request and response packets between the different subnets.
+__NOTICE__ Check firewall setting and routers to receive/send dhcp request and response packets between the different subnets.
+
+
+
+### QSPI Flash Memory Map
+
+| Begin | End | Contents | Size |
+| :--- | :--- | :--- | :--- |
+| `0x000000` | `0x0FFFFF` | BOOT.bin | 1MB |
+| `0x100000` | `0x11FFFF` | uboot.env | 128KB |
+| `0x120000` | `0x13FFFF` | uboot_redun.env | 128KB |
+| `0x200000` | `0x7FFFFF` | psc.bit | 6MB |
+| `0x800000` | `0xAFFFFF` | psc.elf | 2MB |
+| `0xB00000` | `0xFFFFFF` | Free space | 4MB |
+
+**Free space should be used for the PSC calibration and configuration parameters**
 
 ---
 ## <a name="ubootimage"></a> u-boot image preparation
@@ -124,9 +140,9 @@ You need two different `fsbl.elf`, one for SD card boot and the other for QSPI b
 
 `fsbl.elf` in the Vivado project doesn't support QSPI boot. 
 
-1. First, bring your `fsbl.elf` file from your Vivado project and change the name to `fsbl_sd.elf`
+1. bring your `fsbl.elf` from your Vivado/Vitis project and change the name to `fsbl_sd.elf`
 
-2. Second generate `fsbl_sf.elf` with following method:
+2. generate `fsbl_sf.elf` with following method:
 
 ```sh
 source /opt/Xilinx/Vitis/<Version>/settings64.sh
@@ -198,7 +214,7 @@ bootgen -arch zynq -image u-boot_sf.bif -w -o qspiboot.bin
 
 ---
 
-### Generate initial environment: uboot.env, qspiboot.env
+### <a name="generateenv"></a> Generate initial environment: uboot.env, qspiboot.env
 
 Create a file `uboot_env_sd.txt` and `uboot_env_sf.txt` with the following initial contents.
 
@@ -285,10 +301,10 @@ bootcmd=run net_boot || run qspi_boot || echo "FATAL: All boot sources failed.";
 Replace `xx:xx:xx:xx:xx:xx` with actual device MAC address.
 
 
-### Generate bootfile
+### <a name="bootscript"></a> Generate boot script : psc-xch-xxx.scr
 
 
-In this example we create `psc-2ch-hss.txt` :
+Here's the example of `psc-2ch-hss.txt` :
 
 ```sh
 #memaddr=0x30000000
@@ -339,7 +355,11 @@ Now generate `psc-2ch-hss.scr` and `psc-4ch-hss.scr`
 ./tools/mkimage -A arm -T script -C none -n "PSC-4CH-HSS Boot Script" -d pscboot_4ch_hss.txt psc-4ch-hss.scr
 ```
 
-## Deployment procedure
+__NOTICE__: you can reprogram the Flash memory by setting `setenv updateflash y`
+
+---
+
+## U-boot Deployment
 
 1. Copy boot scripts (psc-Xch-XXX.scr) to the TFTP root folder
 2. Format the SD card with FAT and copy the following files : 

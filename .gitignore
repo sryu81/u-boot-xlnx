@@ -34,3 +34,4 @@ u-boot.map
 u-boot.srec
 u-boot.sym
 scripts/dtc/dtc-parser.tab.h
+picozed/*
