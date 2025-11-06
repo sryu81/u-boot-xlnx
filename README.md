@@ -351,8 +351,8 @@ bootelf ${elfaddr}
 
 Now generate `psc-2ch-hss.scr` and `psc-4ch-hss.scr`
 ```
-./tools/mkimage -A arm -T script -C none -n "PSC-2CH-HSS Boot Script" -d pscboot_2ch_hss.txt psc-2ch-hss.scr
-./tools/mkimage -A arm -T script -C none -n "PSC-4CH-HSS Boot Script" -d pscboot_4ch_hss.txt psc-4ch-hss.scr
+./tools/mkimage -A arm -T script -C none -n "PSC-2CH-HSS Boot Script" -d psc_2ch_hss.txt psc-2ch-hss.scr
+./tools/mkimage -A arm -T script -C none -n "PSC-4CH-HSS Boot Script" -d psc_4ch_hss.txt psc-4ch-hss.scr
 ```
 
 __NOTICE__: you can reprogram the Flash memory by setting `setenv updateflash y`
