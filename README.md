@@ -320,6 +320,7 @@ setenv elfaddr 0x32000000
 setenv autostart n
 setenv autoload n
 setenv updateflash n
+setenv updateNETCNF n
 
 echo "--- Loading firmware from Network ---"
 dhcp
@@ -337,9 +338,16 @@ if test "${updateflash}" = "y"; then
     echo "write ELF executable to Flash memory";
     sf erase 0x800000 ${elfsize};
     sf write ${elfaddr} 0x800000 ${elfsize};
-    echo "Updating finished"
-else 
-    echo "Updating the firmware is not enabled or set to 'n'. Skipping commands."
+    echo "Update finished"
+fi
+
+if test "${updateNETCNF}" = "y"; then
+    echo "Updating the NET.CNF in SD card is enabled. Executing commands..."
+    mmc info;
+    tftpboot 0x33000000 psc/NET.CNF;
+    md 0x33000000;
+    fatwrite mmc 0:1 0x33000000 NET.CNF $filesize;
+    echo "Update finished";
 fi
 
 echo "Writing bitstream into FPGA...";
