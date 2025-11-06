@@ -120,7 +120,7 @@ __NOTICE__ Check firewall setting and routers to receive/send dhcp request and r
 **Free space should be used for the PSC calibration and configuration parameters**
 
 ---
-## <a name="ubootimage"></a> u-boot image preparation
+## <a name="ubootimage"></a> U-boot image preparation
 
 Build U-Boot for Power Supply Controller,
 based on [Picozed 7030 SOM](https://www.avnet.com/opasdata/d120001/medias/docus/126/$v2/5279-UG-PicoZed-7015-7030-V2_0.pdf) . (Zynq-7000)
