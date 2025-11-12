@@ -34,7 +34,7 @@ puts "INFO: Creating FSBL application..."
 app create -name fsbl -platform $platform_name -domain standalone_ps7_cortexa9_0 -template {Zynq FSBL}
 
 puts "INFO: Configuring FSBL Application Compiler Settings for QSPI..."
-app config -name fsbl -add define "FSBL_SD_EXCLUDE=1"
+#app config -name fsbl -add define "FSBL_SD_EXCLUDE=1"
 app config -name fsbl -add define "FSBL_DEBUG_INFO=1"
 
 puts "INFO: Building the FSBL application..."
