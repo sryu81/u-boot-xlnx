@@ -129,16 +129,20 @@ needs to be combined with an `fsbl.elf` using the `bootgen` tool.
 
 ```sh
 # create u-boot.bif
+# create u-boot.bif
 u_boot:
 {
+        [bootloader]fsbl.elf
         [bootloader]fsbl.elf
         u-boot.elf
 }
 
 # generate bin files
 bootgen -arch zynq -image u-boot.bif -w -o BOOT.bin
+bootgen -arch zynq -image u-boot.bif -w -o BOOT.bin
 ```
 
+`BOOT.bin` should now be exist.
 `BOOT.bin` should now be exist.
 
 
