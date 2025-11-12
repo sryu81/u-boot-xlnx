@@ -22,6 +22,7 @@ To achieve the goal, we prepared following topics :
 - [U-boot boot loader and environment script](#u-boot-boot-loader-and-environment-script)
 - [TFTP boot script](#tftp-boot-script)
 - [DHCP configuration](#dhcp-server-configuration)
+- [PSC FreeRTOS app](#psc-freertos-app)
 - [QSPI Flash update with SD card](#qspi-flash-update-with-sd-card)
 
 <br>
@@ -309,8 +310,9 @@ fpga loadb 0 ${bitaddr} ${filesize};
 setenv autostart y
 bootelf ${elfaddr}
 ```
-__NOTE 1__: you can reprogram the Flash memory by setting `setenv updateflash y` \
-__NOTE 2__: you can trasnfer your NET.CNF file to the SD card `setenv updateNETCNF y` 
+__NOTE 1__: be aware of `bitname` and `elfname` for target location \
+__NOTE 2__: you can reprogram the Flash memory by setting `setenv updateflash y` \
+__NOTE 3__: you can trasnfer your NET.CNF file to the SD card `setenv updateNETCNF y` 
 
 <br>
 
@@ -377,6 +379,20 @@ __NOTICE__ Check firewall setting and routers to receive/send dhcp request and r
 
 <br>
 
+## PSC FreeRTOS app
+
+PSC can read the MAC from the Flash memory at the boot time by adding/modifying these files : 
+
+- local.h
+- main.c
+- qspi_flash.h
+- qspi_flash.c
+
+The changes are available at [git.als.lbl.gov](https://git.als.lbl.gov/alsu/nsls2/psc)
+
+Once the firmware is compiled then copy the bit and elf files to TFTP root folder
+
+
 ## QSPI Flash update with SD card 
 
 1. Connect the serial cable and open the terminal
@@ -403,4 +419,3 @@ sf probe
 setenv -f ethaddr 00:11:22:33:44:55
 saveenv
 ```
-
