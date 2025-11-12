@@ -179,7 +179,7 @@ bootcmd= echo "Writing Flash Rom"; \
    sf write ${envaddr} 0x120000 ${ubootenvsize}; \
    echo "QSPI programming completed.. "
 ```
-__NOTE 1__ : This script will move the existing PSC parameters in the Flash memory from 0x10000 to 0xB10000. You need to adjust the offset in the PSC software side together. Refer to `qspi_flash.h` of [git.als.lbl.gov/alsu/nsls2/psc](https://git.als.lbl.gov/alsu/nsls2/psc)
+__NOTE 1__ : This script will move the existing PSC parameters in the Flash memory from the address of 0x10000 to 0xB10000. This requires you to adjust the Flash memory offset in the PSC software together. Refer to `qspi_flash.h` and `qspi_flash.c` of [git.als.lbl.gov/alsu/nsls2/psc](https://git.als.lbl.gov/alsu/nsls2/psc)
 
 Now create `uboot.env`  
 
@@ -386,7 +386,7 @@ PSC can read the MAC from the Flash memory at the boot time by adding/modifying 
 - qspi_flash.h
 - qspi_flash.c
 
-The changes are available at [git.als.lbl.gov](https://git.als.lbl.gov/alsu/nsls2/psc)
+The changes are available at [git.als.lbl.gov/alsu/nsls2/psc](https://git.als.lbl.gov/alsu/nsls2/psc)
 
 Once the firmware is compiled then copy the bit and elf files to TFTP root folder
 
@@ -416,4 +416,11 @@ sf probe
 # here assuming your MAC is 00:11:22:33:44:55
 setenv -f ethaddr 00:11:22:33:44:55
 saveenv
+```
+
+and verify if your variable is set or not by dumping Flash memory:
+```sh
+sf read 0x36000000 0x100000 0x10000
+
+md 0x36000000
 ```
