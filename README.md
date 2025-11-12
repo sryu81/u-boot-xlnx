@@ -396,18 +396,18 @@ Once the firmware is compiled then copy the bit and elf files to TFTP root folde
 ## QSPI Flash update with SD card 
 
 1. Connect the serial cable and open the terminal
-2. Open the chassis cover and check the jumper switch (SW1) is in `SD CARD BOOT MODE`[^1]
+2. Open the chassis cover and check the jumper switch (SW1) is in `SD CARD BOOT MODE`.[^1]
 3. Insert the SD card and power on. Wait for 30 second and check the terminal.[^2]
 4. Power Off and change the jumper to `QSPI BOOT MODE`
 5. Close the chassis cover and power on
 6. Check the terminal. Here's `break point`:
    -  Boot process should be done if you set your MAC address in `qspiboot.env`: Refer to [generate initial environment](#qspienv)
-   -  If you didn't, you should press any key within 5 secs before entering auto boot and Refer to the [next section](#if-your-flash-contains-incorrect-mac-address)
+   -  Boot process failed if you didn't set. You should reboot and press any key within 5 secs before entering auto boot: Refer to the [next section](#if-your-flash-contains-incorrect-mac-address)
 
 
-[^1] Refer to Figure 5 of the page 28 of [Picozed 7030 SOM](https://www.avnet.com/opasdata/d120001/medias/docus/126/$v2/5279-UG-PicoZed-7015-7030-V2_0.pdf) manual.
+[^1]: Refer to Figure 5 of the page 28 of [Picozed 7030 SOM](https://www.avnet.com/opasdata/d120001/medias/docus/126/$v2/5279-UG-PicoZed-7015-7030-V2_0.pdf) manual.
 
-[^2]: However, the SD card can remain in the slot because PSC application look for the NET.CNF file in the SD card for network configuration.
+[^2]: Remove the SD card from the slot. However, the SD card can remain in the slot if PSC looks for the NET.CNF file in the SD card for network configuration.
 
 ### If your Flash contains incorrect MAC address
 Intended or unintended you didn't set the correct MAC address then you can correct it
