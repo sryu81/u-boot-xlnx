@@ -130,21 +130,18 @@ needs to be combined with an `fsbl.elf` using the `bootgen` tool.
 
 ```sh
 # create u-boot.bif
-# create u-boot.bif
 u_boot:
 {
-        [bootloader]fsbl.elf
         [bootloader]fsbl.elf
         u-boot.elf
 }
 
 # generate bin files
 bootgen -arch zynq -image u-boot.bif -w -o BOOT.bin
-bootgen -arch zynq -image u-boot.bif -w -o BOOT.bin
 ```
 
 `BOOT.bin` should now be exist.
-`BOOT.bin` should now be exist.
+
 
 
 <br>
@@ -172,8 +169,8 @@ bootcmd= echo "Writing Flash Rom"; \
    sf probe 0 0 0; \
    echo "Move unit parameters to Free space"; \
    sf read 0x38000000 0x0 0x40000; \
-   sf erase 0xB00000 0x40000; \
-   sf write 0x38000000 0xB00000 0x40000; \
+   sf erase 0xB10000 0x40000; \
+   sf write 0x38000000 0xB10000 0x40000; \
    echo "writing u-boot"; \
    sf erase 0x0 0x140000; \
    sf write ${memaddr} 0x0 ${ubootbinsize}; \
@@ -182,6 +179,7 @@ bootcmd= echo "Writing Flash Rom"; \
    sf write ${envaddr} 0x120000 ${ubootenvsize}; \
    echo "QSPI programming completed.. "
 ```
+__NOTE 1__ : This script will move the existing PSC parameters in the Flash memory from 0x10000 to 0xB10000. You need to adjust the offset in the PSC software side together. Refer to `qspi_flash.h` of [git.als.lbl.gov/alsu/nsls2/psc](https://git.als.lbl.gov/alsu/nsls2/psc)
 
 Now create `uboot.env`  
 
