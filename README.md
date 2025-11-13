@@ -13,7 +13,7 @@ Here's a brief description of the PSC unit's boot process:
 5. if necessary, u-boot updates the Flash memory with the downloaded bit and elf file
 6. u-boot programs the FPGA and start the PSC application
 
-![alt text](./psc_uboot_flow.drawio.png)
+![alt text](./psc_uboot_flow.png)
 
 This approach requires DHCP and TFTP server in the network.
 Each device should have uinque MAC and IP address.
@@ -50,7 +50,7 @@ We are going to generate the boot loader and the scripts to configure the boot s
 *NOTE that the SD card is only used once to write the Flash memory.* 
  
 - BOOT.bin     -- boot loader
-- uboot.env    -- a script to program the Flash memory
+- BOOT.env    -- a script to program the Flash memory
 - qspiboot.env -- to be dumped to Flash memory
 
 <br>
@@ -129,7 +129,7 @@ To create a bootable image, the resulting `u-boot.elf`
 needs to be combined with an `fsbl.elf` using the `bootgen` tool.
 
 ```sh
-# create u-boot.bif
+# create uboot.bif
 u_boot:
 {
         [bootloader]fsbl.elf
@@ -137,7 +137,7 @@ u_boot:
 }
 
 # generate bin files
-bootgen -arch zynq -image u-boot.bif -w -o BOOT.bin
+bootgen -arch zynq -image uboot.bif -w -o BOOT.bin
 ```
 
 `BOOT.bin` should now be exist.
@@ -146,18 +146,18 @@ bootgen -arch zynq -image u-boot.bif -w -o BOOT.bin
 
 <br>
 
-### Generate initial environment: uboot.env, qspiboot.env
+### Generate initial environment: BOOT.env, qspiboot.env
 At this step we are going to create **environment binaries** for SD card and Flash memory.\
-Let's prepare `uboot_env_sd.txt` as follows and generate `uboot.env` and `uboot-redund.env` first.
+Let's prepare `bootenv_sd.txt` as follows and generate `BOOT.env` and `BOOT-REDUND.env` first.
 
 ```sh
-#uboot_env_sd.txt:
+#bootenv_sd.txt:
 
 bootdelay=5
 autostart=n
 autoload=n
 ubootfile=BOOT.bin
-ubootenv=qspiboot.env
+ubootenv=QSPI.env
 memaddr=0x30000000
 envaddr=0x30100000
 ubootbinsize=0x100000
@@ -181,15 +181,15 @@ bootcmd= echo "Writing Flash Rom"; \
 ```
 __NOTE 1__ : This script will move the existing PSC parameters in the Flash memory from the address of 0x10000 to 0xB10000. This requires you to adjust the Flash memory offset in the PSC software together. Refer to `qspi_flash.h` and `qspi_flash.c` of [git.als.lbl.gov/alsu/nsls2/psc](https://git.als.lbl.gov/alsu/nsls2/psc)
 
-Now create `uboot.env`  
+Now create `BOOT.env`  
 
 ```sh
-./tools/mkenvimage -r -s 0x20000 -o uboot.env uboot_env_sd.txt
+./tools/mkenvimage -r -s 0x20000 -o BOOT.env bootenv_sd.txt
 
-cp uboot.env uboot-redund.env
+cp BOOT.env BOOT-REDUND.env
 ```
 
-You now have `uboot.env` and `uboot-redund.env`.
+You now have `BOOT.env` and `BOOT-REDUND.env`.
 
 
 __NOTICE__ The `-r` and `-s` arguments must match u-boot build time configuration in `.config`.
@@ -208,7 +208,7 @@ See `readelf` for details.
 Next step is to create the **environment** for Flash memory <a name="qspienv"></a>
 
 ```sh
-#uboot_env_sf.txt:
+#bootenv_sf.txt:
 
 ethaddr=xx:xx:xx:xx:xx:xx
 bootdelay=5
@@ -243,13 +243,13 @@ For ALS-U deployment we decide not to specify MAC address at this stage but just
 Once technicions update the Flash memory for all PSC units, we are going to change the MAC address one by one through serial terminal.
 
 
-Now create `qspiboot.env`  
+Now create `QSPI.env`  
 
 ```sh
-./tools/mkenvimage -r -s 0x20000 -o qspiboot.env uboot_env_sf.txt
+./tools/mkenvimage -r -s 0x20000 -o QSPI.env bootenv_sf.txt
 ```
 
-If you followed up the procedure correctly, you now have `BOOT.bin`, `uboot.env`, `uboot-redund.env` and `qspiboot.env`. Copy these files to your SD card.
+If you followed up the procedure correctly, you now have `BOOT.bin`, `BOOT.env`, `BOOT-REDUND.env` and `qspiboot.env`. Copy these files to your SD card.
 
 <br>
 
