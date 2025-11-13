@@ -51,7 +51,7 @@ We are going to generate the boot loader and the scripts to configure the boot s
  
 - BOOT.bin     -- boot loader
 - BOOT.env    -- a script to program the Flash memory
-- qspiboot.env -- to be dumped to Flash memory
+- QSPI.env -- to be dumped to Flash memory
 
 <br>
 
@@ -61,8 +61,8 @@ Here's our plan for the 16 MB of Flash memory area
 | Begin | End | Contents | Size |  NOTE |
 | :--- | :--- | :--- | :--- | :-- |
 | 0x000000 | 0x0FFFFF | BOOT.bin | 1MB |  U-boot boot loader |
-| 0x100000 | 0x11FFFF | qspiboot.env | 128KB |  QSPI Flash boot script |
-| 0x120000 | 0x13FFFF | qspiboot-redund.env | 128KB | copy of qspiboot.env |
+| 0x100000 | 0x11FFFF | QSPI.env | 128KB |  QSPI Flash boot script |
+| 0x120000 | 0x13FFFF | qspiboot-redund.env | 128KB | copy of QSPI.env |
 | 0x200000 | 0x7FFFFF | psc.bit | 6MB | FPGA bitstream |
 | 0x800000 | 0xAFFFFF | psc.elf | 2MB | PSC FreeRTOS application |
 | 0xB00000 | 0xFFFFFF | Free space | 4MB | PSC unit parameters (calibration, FOFB network etc.,) |
@@ -146,7 +146,7 @@ bootgen -arch zynq -image uboot.bif -w -o BOOT.bin
 
 <br>
 
-### Generate initial environment: BOOT.env, qspiboot.env
+### Generate initial environment: BOOT.env, QSPI.env
 At this step we are going to create **environment binaries** for SD card and Flash memory.\
 Let's prepare `bootenv_sd.txt` as follows and generate `BOOT.env` and `BOOT-REDUND.env` first.
 
@@ -249,7 +249,7 @@ Now create `QSPI.env`
 ./tools/mkenvimage -r -s 0x20000 -o QSPI.env bootenv_sf.txt
 ```
 
-If you followed up the procedure correctly, you now have `BOOT.bin`, `BOOT.env`, `BOOT-REDUND.env` and `qspiboot.env`. Copy these files to your SD card.
+If you followed up the procedure correctly, you now have `BOOT.bin`, `BOOT.env`, `BOOT-REDUND.env` and `QSPI.env`. Copy these files to your SD card.
 
 <br>
 
@@ -399,7 +399,7 @@ Once the firmware is compiled then copy the bit and elf files to TFTP root folde
 4. Power Off and change the jumper to `QSPI BOOT MODE`
 5. Close the chassis cover and power on
 6. Check the terminal. Here's `break point`:
-   -  Boot process should be done if you set your MAC address in `qspiboot.env`: Refer to [generate initial environment](#qspienv)
+   -  Boot process should be done if you set your MAC address in `QSPI.env`: Refer to [generate initial environment](#qspienv)
    -  Boot process failed if you didn't set. You should reboot and press any key within 5 secs before entering auto boot: Refer to the [next section](#if-your-flash-contains-incorrect-mac-address)
 
 
