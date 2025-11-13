@@ -13,7 +13,7 @@ bootcmd= echo "Writing Flash Rom"; \
    fatload mmc 0:1 ${envaddr} ${ubootenv}; \
    sf probe 0 0 0; \
    echo "Move PSC parameters to Free space"; \
-   sf read 0x38000000 0x0 0x40000; \
+   sf read 0x38000000 0x10000 0x40000; \
    sf erase 0xB10000 0x40000; \
    sf write 0x38000000 0xB10000 0x40000; \
    echo "writing u-boot"; \

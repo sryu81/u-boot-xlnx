@@ -67,6 +67,8 @@ Here's our plan for the 16 MB of Flash memory area
 | 0x800000 | 0xAFFFFF | psc.elf | 2MB | PSC FreeRTOS application |
 | 0xB00000 | 0xFFFFFF | Free space | 4MB | PSC unit parameters (calibration, FOFB network etc.,) |
 
+__NOTICE__ --> PSC shipped to LBNL contains the PSC calibration data in the Flash memory address from 0x10000 to 0x4FFFF. We'd like to move the data with offset 0xB00000.
+
 <br>
 Let's start with Build U-boot image
 <br>
@@ -150,6 +152,7 @@ bootgen -arch zynq -image uboot.bif -w -o BOOT.bin
 At this step we are going to create **environment binaries** for SD card and Flash memory.\
 Let's prepare `bootenv_sd.txt` as follows and generate `BOOT.env` and `BOOT-REDUND.env` first.
 
+
 ```sh
 #bootenv_sd.txt:
 
@@ -168,7 +171,7 @@ bootcmd= echo "Writing Flash Rom"; \
    fatload mmc 0:1 ${envaddr} ${ubootenv}; \
    sf probe 0 0 0; \
    echo "Move unit parameters to Free space"; \
-   sf read 0x38000000 0x0 0x40000; \
+   sf read 0x38000000 0x10000 0x40000; \
    sf erase 0xB10000 0x40000; \
    sf write 0x38000000 0xB10000 0x40000; \
    echo "writing u-boot"; \
@@ -179,9 +182,35 @@ bootcmd= echo "Writing Flash Rom"; \
    sf write ${envaddr} 0x120000 ${ubootenvsize}; \
    echo "QSPI programming completed.. "
 ```
-__NOTE 1__ : This script will move the existing PSC parameters in the Flash memory from the address of 0x10000 to 0xB10000. This requires you to adjust the Flash memory offset in the PSC software together. Refer to `qspi_flash.h` and `qspi_flash.c` of [git.als.lbl.gov/alsu/nsls2/psc](https://git.als.lbl.gov/alsu/nsls2/psc)
+__NOTICE__ --> This script will move the existing PSC parameters in the Flash memory from the address of `0x10000` to `0xB10000`. This requires you to adjust the Flash memory offset in the PSC software together. Refer to `qspi_flash.h` and `qspi_flash.c` of [git.als.lbl.gov/alsu/nsls2/psc](https://git.als.lbl.gov/alsu/nsls2/psc).
+If PSC already stores the parameters at 0xB10000 then you should use the script as below : 
+```sh
+#bootenv_sd.txt without data move :
 
-Now create `BOOT.env`  
+bootdelay=5
+autostart=n
+autoload=n
+ubootfile=BOOT.bin
+ubootenv=QSPI.env
+memaddr=0x30000000
+envaddr=0x30100000
+ubootbinsize=0x100000
+ubootenvsize=0x20000
+
+bootcmd= echo "Writing Flash Rom"; \
+   fatload mmc 0:1 ${memaddr} ${ubootfile}; \
+   fatload mmc 0:1 ${envaddr} ${ubootenv}; \
+   sf probe 0 0 0; \
+   echo "writing u-boot"; \
+   sf erase 0x0 0x140000; \
+   sf write ${memaddr} 0x0 ${ubootbinsize}; \
+   echo "write env"; \
+   sf write ${envaddr} 0x100000 ${ubootenvsize}; \
+   sf write ${envaddr} 0x120000 ${ubootenvsize}; \
+   echo "QSPI programming completed.. "
+```
+
+Now create `BOOT.env`
 
 ```sh
 ./tools/mkenvimage -r -s 0x20000 -o BOOT.env bootenv_sd.txt
