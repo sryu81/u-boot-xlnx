@@ -444,8 +444,10 @@ through the serial terminal.
 sf probe
 # here assuming your MAC is 00:11:22:33:44:55
 setenv -f ethaddr 00:11:22:33:44:55
-saveenv
+saveenv   # save environment to env redundant area
+saveenv   # save environment to env area
 ```
+you need to type saveenv twice. 
 
 and verify if your variable is set or not by dumping Flash memory:
 ```sh
@@ -453,3 +455,186 @@ sf read 0x36000000 0x100000 0x10000
 
 md 0x36000000
 ```
+
+The output looks like this...
+```sh
+Zynq> sf probe
+SF: Detected n25q128a13 with page size 256 Bytes, erase size 64 KiB, total 16 MiB
+Zynq> setenv -f ethaddr 00:11:22:33:44:55
+Zynq> saveenv
+Saving Environment to SPIFlash... Erasing SPI flash...Writing to SPI flash...done
+Valid environment: 2
+OK
+Zynq> saveenv
+Saving Environment to SPIFlash... Erasing SPI flash...Writing to SPI flash...done
+Valid environment: 1
+OK
+Zynq> sf read 0x36000000 0x100000 0x10000
+device 0 offset 0x100000, size 0x10000
+SF: 65536 bytes @ 0x100000 Read: 
+OK
+Zynq> md 0x36000000
+36000000: df40c609 74756101 616f6c6f 006e3d64  ..@..autoload=n.
+36000010: 6f747561 72617473 006e3d74 73746962  autostart=n.bits
+36000020: 3d657a69 30367830 30303030 6f6f6200  ize=0x600000.boo
+36000030: 646d6374 6e75723d 74656e20 6f6f625f  tcmd=run net_boo
+36000040: 7c7c2074 6e757220 70737120 6f625f69  t || run qspi_bo
+36000050: 7c20746f 6365207c 22206f68 41544146  ot || echo "FATA
+36000060: 41203a4c 62206c6c 20746f6f 72756f73  L: All boot sour
+36000070: 20736563 6c696166 222e6465 6f62003b  ces failed.";.bo
+36000080: 6564746f 3d79616c 6c650035 7a697366  otdelay=5.elfsiz
+36000090: 78303d65 30303032 65003030 64616874  e=0x200000.ethad
+360000a0: 303d7264 31313a30 3a32323a 343a3333  dr=00:11:22:33:4
+360000b0: 35353a34 74646600 746e6f63 616c6f72  4:55.fdtcontrola
+360000c0: 3d726464 66616533 30353737 6d656d00  ddr=3eaf7750.mem
+360000d0: 72646461 3378303d 30303030 00303030  addr=0x30000000.
+360000e0: 5f74656e 746f6f62 20200a3d 68636520  net_boot=.   ech
+360000f0: 2d22206f 4c202d2d 6964616f 6620676e  o "--- Loading f
+Zynq>
+```
+
+<br>
+
+## Appendix
+
+### Network boot
+
+Example output for network boot
+
+```sh
+U-Boot 2024.01-psc-gcab72928-dirty (Nov 12 2025 - 17:00:05 -0800)
+
+CPU:   Zynq 7z030
+Silicon: v3.1
+Model: Zynq PicoZed Board
+DRAM:  ECC disabled 1 GiB
+Core:  19 devices, 15 uclasses, devicetree: board
+Flash: 0 Bytes
+NAND:  0 MiB
+MMC:   mmc@e0100000: 0
+Loading Environment from SPIFlash... SF: Detected n25q128a13 with page size 256 Bytes, erase size 64 KiB, totalB
+OK
+In:    serial@e0001000
+Out:   serial@e0001000
+Err:   serial@e0001000
+Net:   
+ZYNQ GEM: e000b000, mdio bus e000b000, phyaddr 0, interface rgmii-id
+eth0: ethernet@e000b000
+Hit any key to stop autoboot:  0 
+--- Loading firmware from Network ---
+BOOTP broadcast 1
+DHCP client bound to address 10.16.18.184 (1 ms)
+Using ethernet@e000b000 device
+TFTP from server 10.16.18.12; our IP address is 10.16.18.184
+Filename 'psc-4ch-hss.scr'.
+Load address: 0x30000000
+Loading: #
+         260.7 KiB/s
+done
+Bytes transferred = 1335 (537 hex)
+## Executing script at 30000000
+--- Loading firmware from Network ---
+BOOTP broadcast 1
+DHCP client bound to address 10.16.18.184 (1 ms)
+Loading bitstream from TFTP...
+Using ethernet@e000b000 device
+TFTP from server 10.16.18.12; our IP address is 10.16.18.184
+Filename 'psc/psc-4ch-hss.bit'.
+Load address: 0x31000000
+Loading: #################################################################
+         #################################################################
+         #################################################################
+         #################################################################
+         #################################################################
+         #################################################################
+         ##################
+         14.7 MiB/s
+done
+Bytes transferred = 5980015 (5b3f6f hex)
+Loading ELF from TFTP...
+Using ethernet@e000b000 device
+TFTP from server 10.16.18.12; our IP address is 10.16.18.184
+Filename 'psc/psc-4ch-hss.elf'.
+Load address: 0x32000000
+Loading: #################################################################
+         #################################################################
+         #######
+         14.8 MiB/s
+done
+Bytes transferred = 2000864 (1e87e0 hex)
+Writing bitstream into FPGA...
+  design filename = "top;UserID=0XFFFFFFFF;Version=2022.2"
+  part number = "7z030sbg485"
+  date = "2025/09/04"
+  time = "12:10:50"
+  bytes in bitstream = 5979916
+zynq_align_dma_buffer: Align buffer at 31000063 to 31000040(swap 1)
+INFO:post config was not run, please run manually if needed
+## Starting application at 0x00100000 ...
+Power Supply Controller
+Module ID Number: E1C00100
+Module Version Number: 91
+Project ID Number: E1C00010
+Project Version Number: 91
+Git Checksum: 22AC09D9
+Project Compilation Timestamp: 2025-09-04 18:50:25
+Si570 Registers before re-programming...
+Read si570 registers
+Stat: 0:   val0:21  
+Stat: 0:   val0:C2  
+Stat: 0:   val0:BC  
+Stat: 0:   val0:10  
+Stat: 0:   val0:EB  
+Stat: 0:   val0:9E  
+
+Si570 Registers after re-programming...
+Read si570 registers
+Stat: 0:   val0:0  
+Stat: 0:   val0:C2  
+Stat: 0:   val0:BB  
+Stat: 0:   val0:BE  
+Stat: 0:   val0:6E  
+Stat: 0:   val0:69  
+
+
+Reading PSC Settings from EEPROM...
+Invalid Number of Channel Setting...
+Invalid Resolution Setting...
+Invalid Bandwidth Setting
+Invalid Polarity Setting
+
+
+Resetting EVR GTX...
+Setting FOFB IP Address to 10.0.142.100...
+Main thread running
+Decoded MAC address from U-Boot env: 00:19:24:00:21:02
+MAC: 00:19:24:00:21:02
+Start PHY autonegotiation 
+Waiting for PHY to complete autonegotiation.
+autonegotiation complete 
+link speed for phy address 0: 1000
+unable to determine type of EMAC with baseaddress 0xE000B000
+DINFO: Starting HFO: Starting ststats daemon
+Iaz datNFO: Starting 10Hz data daemon
+INFO: Starting Snapshot data daemon
+INFO: Starting console daemon
+Server ready on port 3000
+Running PSC Menu (len = 11)
+
+Select an option:
+  A:  Display PSC Settings
+  B:  Set Number of Channels (2 or 4)
+  C:  Set Resolution (High or Medium)
+  D:  Set Bandwidth (Fast or Slow)
+  E:  Set Polarity (Bipolar or Unipolar)
+  F:  Display Snapshot Stats
+  G:  Print FreeRTOS Stats
+  H:  Dump EEPROM
+  I:  Clear EEPROM
+  J:  Test EEPROM
+  K:  Dave Bergman Calibration Mode
+  Q:  quit
+DHCP address assigned: 10.16.18.184/255.255.255.0 gw: 10.16.18.1
+
+```
+
