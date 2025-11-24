@@ -1,0 +1,25 @@
+bootdelay=5
+autostart=n
+autoload=n
+ubootfile=BOOT.bin
+ubootenv=QSPI.env
+memaddr=0x30000000
+envaddr=0x30100000
+ubootbinsize=0x100000
+ubootenvsize=0x20000
+
+bootcmd= echo "Writing Flash Rom"; \
+   fatload mmc 0:1 ${memaddr} ${ubootfile}; \
+   fatload mmc 0:1 ${envaddr} ${ubootenv}; \
+   sf probe 0 0 0; \
+   echo "Move PSC parameters to Free space"; \
+   sf read 0x38000000 0x10000 0x40000; \
+   sf erase 0xB10000 0x40000; \
+   sf write 0x38000000 0xB10000 0x40000; \
+   echo "writing u-boot"; \
+   sf erase 0x0 0x140000; \
+   sf write ${memaddr} 0x0 ${ubootbinsize}; \
+   echo "write env"; \
+   sf write ${envaddr} 0x100000 ${ubootenvsize}; \
+   sf write ${envaddr} 0x120000 ${ubootenvsize}; \
+   echo "QSPI programming completed.. "
