@@ -373,29 +373,29 @@ Example dhcpd.conf:
 subnet 10.16.18.0 netmask 255.255.255.0 {
     option subnet-mask 255.255.255.0;
     option broadcast-address 10.16.255.255;  # broadcast to other subnets
-    option domain-name "als.private.lbl.gov";
+    option domain-name "your.url.address.here";
     option routers 10.16.18.1;               # check correct router to use
 
     host psc-01 {
-        hardware ethernet 00:19:24:00:21:01;      
-        fixed-address 10.16.17.11;         # ip address to be assigned to psc
-        next-server 10.16.18.12;           # TFTP server ip address
+        hardware ethernet 00:00:00:00:00:01;      
+        fixed-address 10.16.18.181;         # ip address to be assigned to psc
+        next-server 10.16.8.12;           # TFTP server ip address
         filename "psc-2ch-hss.scr";        # boot script in the TFTP
     }
 
     host psc-02 {
-        hardware ethernet 00:19:24:00:21:02;
-        fixed-address 10.16.17.12;
-        next-server 10.16.18.12;
+        hardware ethernet 00:00:00:00:00:02;
+        fixed-address 10.16.18.182;
+        next-server 10.16.8.12;
         filename "psc-4ch-mss.scr";
     }  
     
     ...
 
-    host psc-FF {
-        hardware ethernet 00:19:24:00:23:FF;
-        fixed-address 10.16.17.12;
-        next-server 10.16.18.12;
+    host psc-XX {
+        hardware ethernet 00:00:00:00:00:XX;
+        fixed-address 10.16.18.XX;
+        next-server 10.16.8.12;
         filename "psc-4ch-hss.scr";
     }
 }
